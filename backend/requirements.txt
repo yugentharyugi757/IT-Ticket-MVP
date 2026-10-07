@@ -1,5 +1,6 @@
 fastapi
 uvicorn
 chromadb
-sentence-transformers
 pydantic
+scikit-learn
+numpy

@@ -1,12 +1,14 @@
 from pathlib import Path
+from typing import Any, cast
 
 import chromadb
-from sentence_transformers import SentenceTransformer
+from chromadb.api.types import Metadata, PyEmbedding
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 
-MODEL_NAME = "all-MiniLM-L6-v2"
 CHROMA_PATH = Path(__file__).resolve().parent.parent / "chroma_data"
 COLLECTION_NAME = "ticket_priority"
+COLLECTION_VERSION = "tfidf-v1"
 
 REFERENCE_TICKETS = {
     "HIGH": [
@@ -35,46 +37,60 @@ REFERENCE_TICKETS = {
     ],
 }
 
+reference_documents: list[str] = []
+reference_metadatas: list[Metadata] = []
+reference_ids: list[str] = []
+for priority, tickets in REFERENCE_TICKETS.items():
+    for index, ticket in enumerate(tickets):
+        reference_documents.append(ticket)
+        reference_metadatas.append({"priority": priority})
+        reference_ids.append(f"{priority.lower()}-{index}")
 
-def _seed_collection(
-    collection: chromadb.Collection,
-    model: SentenceTransformer,
-) -> None:
-    if collection.count() != 0:
-        return
-
-    documents: list[str] = []
-    metadatas: list[dict[str, str]] = []
-    ids: list[str] = []
-    for priority, tickets in REFERENCE_TICKETS.items():
-        for index, ticket in enumerate(tickets):
-            documents.append(ticket)
-            metadatas.append({"priority": priority})
-            ids.append(f"{priority.lower()}-{index}")
-
-    embeddings = model.encode(documents).tolist()
-    collection.add(
-        documents=documents,
-        embeddings=embeddings,
-        metadatas=metadatas,
-        ids=ids,
-    )
-
+vectorizer: TfidfVectorizer = TfidfVectorizer()
+vectorizer_runtime = cast(Any, vectorizer)
+reference_matrix = vectorizer_runtime.fit_transform(reference_documents)
 
 CHROMA_PATH.mkdir(parents=True, exist_ok=True)
-model = SentenceTransformer(MODEL_NAME)
 client = chromadb.PersistentClient(path=str(CHROMA_PATH))
 collection = client.get_or_create_collection(
     name=COLLECTION_NAME,
-    metadata={"hnsw:space": "cosine"},
+    metadata={
+        "hnsw:space": "cosine",
+        "embedding_type": COLLECTION_VERSION,
+    },
 )
-_seed_collection(collection, model)
+
+if collection.metadata.get("embedding_type") != COLLECTION_VERSION:
+    client.delete_collection(name=COLLECTION_NAME)
+    collection = client.create_collection(
+        name=COLLECTION_NAME,
+        metadata={
+            "hnsw:space": "cosine",
+            "embedding_type": COLLECTION_VERSION,
+        },
+    )
+
+if collection.count() == 0:
+    collection.add(
+        documents=reference_documents,
+        embeddings=cast(
+            list[PyEmbedding],
+            reference_matrix.toarray().tolist(),
+        ),
+        metadatas=reference_metadatas,
+        ids=reference_ids,
+    )
 
 
 def classify_ticket(ticket_text: str) -> dict[str, str | float]:
-    embedding = model.encode(ticket_text).tolist()
+    ticket_matrix = vectorizer_runtime.transform([ticket_text])
+    if ticket_matrix.nnz == 0:
+        raise ValueError("Ticket text contains no terms found in reference tickets.")
+
     result = collection.query(
-        query_embeddings=[embedding],
+        query_embeddings=[
+            cast(list[float], ticket_matrix.toarray()[0].tolist())
+        ],
         n_results=1,
         include=["metadatas", "distances"],
     )
@@ -86,7 +102,7 @@ def classify_ticket(ticket_text: str) -> dict[str, str | float]:
 
     priority = metadatas[0][0].get("priority")
     distance = distances[0][0]
-    if priority is None or distance is None:
+    if not isinstance(priority, str):
         raise RuntimeError("ChromaDB returned an incomplete matching ticket.")
 
     confidence = max(0.0, min(1.0, 1.0 - float(distance)))
