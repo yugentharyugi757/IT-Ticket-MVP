@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Review and clear open IT support tickets."
+    />
+    <title>Open Tickets · AI IT Ticketing System</title>
+    <link rel="stylesheet" href="/style.css" />
+    <script src="/script.js" defer></script>
+  </head>
+  <body>
+    <main class="page-shell admin-shell">
+      <header class="site-header">
+        <a class="brand" href="/" aria-label="AI IT Ticketing System home">
+          <span class="brand-mark" aria-hidden="true">IT</span>
+          <span>Support Portal</span>
+        </a>
+        <span class="admin-label">
+          <span class="admin-label-dot" aria-hidden="true"></span>
+          ADMIN VIEW
+        </span>
+      </header>
+
+      <section class="admin-hero" aria-labelledby="admin-title">
+        <div>
+          <p class="eyebrow">IT SERVICE DESK</p>
+          <h1 id="admin-title">Open tickets</h1>
+          <p class="hero-copy">
+            Review incoming requests and clear tickets once they’ve been handled.
+          </p>
+        </div>
+        <button id="refresh-button" class="refresh-button" type="button">
+          <span class="refresh-icon" aria-hidden="true">↻</span>
+          Refresh
+        </button>
+      </section>
+
+      <p id="admin-message" class="admin-message" role="status" hidden></p>
+
+      <section class="admin-card" aria-label="Open ticket queue">
+        <div class="queue-header">
+          <div>
+            <h2>Ticket queue</h2>
+            <p id="ticket-count" class="queue-subtitle">Loading open tickets…</p>
+          </div>
+          <span class="queue-live">
+            <span class="status-dot" aria-hidden="true"></span>
+            OPEN
+          </span>
+        </div>
+
+        <div id="ticket-table-wrap" class="ticket-table-wrap" hidden>
+          <table class="ticket-table">
+            <thead>
+              <tr>
+                <th scope="col">Ticket</th>
+                <th scope="col">Raised Time</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody id="ticket-rows"></tbody>
+          </table>
+        </div>
+
+        <div id="empty-state" class="empty-state" hidden>
+          <span class="empty-icon" aria-hidden="true">✓</span>
+          <h3>All caught up</h3>
+          <p>There are no open tickets right now.</p>
+        </div>
+      </section>
+
+      <footer class="site-footer">
+        <span>AI IT Ticketing System</span>
+        <a href="/">Submit an IT request <span aria-hidden="true">→</span></a>
+      </footer>
+    </main>
+  </body>
+</html>

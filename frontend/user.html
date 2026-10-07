@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Submit an IT support request and receive an AI-assessed priority."
+    />
+    <title>AI IT Ticketing System</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <main class="page-shell">
+      <header class="site-header">
+        <a class="brand" href="/" aria-label="AI IT Ticketing System home">
+          <span class="brand-mark" aria-hidden="true">IT</span>
+          <span>Support Portal</span>
+        </a>
+        <span class="header-status">
+          <span class="status-dot" aria-hidden="true"></span>
+          AI-assisted support
+        </span>
+      </header>
+
+      <section class="hero" aria-labelledby="page-title">
+        <p class="eyebrow">IT SERVICE DESK</p>
+        <h1 id="page-title">AI IT Ticketing System</h1>
+        <p class="hero-copy">
+          Tell us what’s going on. Our AI will assess the priority and get your
+          request to the right place.
+        </p>
+      </section>
+
+      <section class="content-grid" aria-label="Submit an IT ticket">
+        <form id="ticket-form" class="ticket-card">
+          <div class="card-heading">
+            <div>
+              <p class="section-kicker">NEW REQUEST</p>
+              <h2>How can we help?</h2>
+            </div>
+            <span class="required-note"><span aria-hidden="true">*</span> Required</span>
+          </div>
+
+          <div class="field">
+            <label for="name">Your name <span aria-hidden="true">*</span></label>
+            <input
+              id="name"
+              name="name"
+              type="text"
+              placeholder="e.g. Jordan Lee"
+              autocomplete="name"
+              maxlength="120"
+              required
+            />
+          </div>
+
+          <div class="field">
+            <label for="description">Describe your IT issue <span aria-hidden="true">*</span></label>
+            <textarea
+              id="description"
+              name="description"
+              rows="6"
+              placeholder="What’s happening? Include any error messages or details that may help."
+              maxlength="2000"
+              required
+            ></textarea>
+            <p class="field-hint">A few details help us assess your request accurately.</p>
+          </div>
+
+          <button id="submit-button" class="submit-button" type="submit">
+            <span class="button-label">Submit Ticket</span>
+            <span class="button-arrow" aria-hidden="true">→</span>
+          </button>
+
+          <div id="loading-indicator" class="loading-indicator" role="status" hidden>
+            <span class="spinner" aria-hidden="true"></span>
+            <span>Assessing your request and creating your ticket…</span>
+          </div>
+          <p id="form-error" class="form-error" role="alert" hidden></p>
+        </form>
+
+        <aside class="info-panel" aria-label="What to expect">
+          <div class="info-icon" aria-hidden="true">✦</div>
+          <p class="section-kicker">SMART ROUTING</p>
+          <h2>Help starts with the right priority.</h2>
+          <p>
+            Each request is reviewed by our AI classifier to estimate its
+            urgency, so your IT team can focus on what matters most.
+          </p>
+          <div class="priority-key">
+            <div><span class="priority-dot priority-high"></span><span>High priority</span></div>
+            <div><span class="priority-dot priority-medium"></span><span>Medium priority</span></div>
+            <div><span class="priority-dot priority-low"></span><span>Low priority</span></div>
+          </div>
+          <p class="privacy-note">Your request is shared with the IT support team.</p>
+        </aside>
+      </section>
+
+      <section
+        id="result-section"
+        class="result-card"
+        aria-labelledby="result-title"
+        aria-live="polite"
+        hidden
+      >
+        <div class="result-heading">
+          <span class="result-check" aria-hidden="true">✓</span>
+          <div>
+            <p class="section-kicker">REQUEST RECEIVED</p>
+            <h2 id="result-title">Your ticket is in the queue</h2>
+          </div>
+        </div>
+        <div class="result-details">
+          <div class="result-item">
+            <span class="result-label">Ticket ID</span>
+            <strong id="result-ticket-id">—</strong>
+          </div>
+          <div class="result-item">
+            <span class="result-label">Priority</span>
+            <strong id="result-priority" class="priority-badge">—</strong>
+          </div>
+          <div class="result-item">
+            <span class="result-label">AI confidence</span>
+            <strong id="result-confidence">—</strong>
+          </div>
+          <div class="result-item">
+            <span class="result-label">Submission time</span>
+            <strong id="result-time">—</strong>
+          </div>
+        </div>
+      </section>
+
+      <footer class="site-footer">
+        <span>AI IT Ticketing System</span>
+        <span>Here to keep your work moving.</span>
+      </footer>
+    </main>
+  </body>
+</html>
